@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Multi-Modal Transport Optimizer</title>
+
+  <!-- Inter font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            slateBlue: '#1E3A8A',
+            emerald: '#10B981',
+          },
+        },
+      },
+    };
+  </script>
+</head>
+
+<body class="min-h-screen bg-slate-100 font-sans text-slate-900">
+  <!-- Page shell -->
+  <div class="min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="border-b border-slate-200 bg-gradient-to-r from-slateBlue to-emerald shadow-sm">
+      <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div>
+          <h1 class="text-xl sm:text-2xl font-semibold text-white tracking-tight">
+            AI Multi-Modal Transport System
+          </h1>
+          <p class="text-sm text-emerald-100 mt-1">
+            Intelligent route planning with cost, time, and CO₂ insights.
+          </p>
+        </div>
+        <div class="flex items-center gap-2 text-xs sm:text-sm text-slate-100/80">
+          <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-slate-900/20 border border-slate-100/10">
+            <span class="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            Dashboard
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main content -->
+    <main class="flex-1">
+      <div class="max-w-6xl mx-auto px-4 py-8">
+        <!-- Responsive 2-column grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+          <!-- Left column: Input form card -->
+          <section
+            class="bg-white rounded-2xl shadow-md shadow-slate-200/70 border border-slate-100 p-6 sm:p-8">
+            <h2 class="text-lg font-semibold text-slate-900 mb-1">
+              Shipment Details
+            </h2>
+            <p class="text-sm text-slate-500 mb-6">
+              Enter basic shipment information to generate an AI-optimized route profile.
+            </p>
+
+            <form id="route-form" class="space-y-4">
+              <!-- Origin -->
+              <div class="space-y-1.5">
+                <label for="origin" class="block text-sm font-medium text-slate-700">
+                  Origin
+                </label>
+                <input id="origin" name="origin" type="text" autocomplete="off" required
+                  class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  placeholder="e.g., Mumbai, IN" />
+              </div>
+
+              <!-- Destination -->
+              <div class="space-y-1.5">
+                <label for="destination" class="block text-sm font-medium text-slate-700">
+                  Destination
+                </label>
+                <input id="destination" name="destination" type="text" autocomplete="off" required
+                  class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  placeholder="e.g., Delhi, IN" />
+              </div>
+
+              <!-- Weight (kg) -->
+              <div class="space-y-1.5">
+                <label for="weight" class="block text-sm font-medium text-slate-700">
+                  Weight (kg)
+                </label>
+                <input id="weight" name="weight" type="number" min="1" step="0.1" required
+                  class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  placeholder="e.g., 1200" />
+              </div>
+
+              <!-- Distance (km) -->
+              <div class="space-y-1.5">
+                <label for="distance" class="block text-sm font-medium text-slate-700">
+                  Distance (km)
+                </label>
+                <input id="distance" name="distance" type="number" min="1" step="1" required
+                  class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  placeholder="e.g., 750" />
+              </div>
+
+              <!-- Traffic Level (1-10) -->
+              <div class="space-y-1.5">
+                <label for="traffic" class="block text-sm font-medium text-slate-700">
+                  Traffic Level (1–10)
+                </label>
+                <input id="traffic" name="traffic" type="number" min="1" max="10" step="1" required
+                  class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  placeholder="e.g., 5" />
+                <p class="text-xs text-slate-400">
+                  1 = very light, 10 = heavy congestion.
+                </p>
+              </div>
+
+              <!-- Transport Mode -->
+              <div class="space-y-1.5">
+                <label for="transport_mode" class="block text-sm font-medium text-slate-700">
+                  Transport Mode
+                </label>
+                <select id="transport_mode" name="transport_mode" required
+                  class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                  <option value="truck">Truck</option>
+                  <option value="rail">Rail</option>
+                  <option value="air">Air</option>
+                </select>
+              </div>
+
+              <!-- Button -->
+              <div class="pt-2">
+                <button type="submit"
+                  class="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-black shadow-md shadow-emerald-500/30 hover:bg-emerald-700 hover:text-black focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-slate-50 transition">
+                  Calculate Route
+                </button>
+              </div>
+            </form>
+          </section>
+
+          <!-- Right column: Results dashboard -->
+          <section
+            class="bg-white rounded-2xl shadow-md shadow-slate-200/70 border border-slate-100 p-6 sm:p-8 min-h-[200px] space-y-4">
+            <h2 class="text-lg font-semibold text-slate-900">
+              Results Dashboard
+            </h2>
+            <p class="text-sm text-slate-500">
+              Once calculated, your optimized route metrics will appear here.
+            </p>
+
+            <!-- Error box (hidden by default) -->
+            <div id="error-box"
+              class="hidden rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800">
+              <span id="error-message">Unable to fetch route prediction. Please try again.</span>
+            </div>
+
+            <!-- Transport Mode Display (hidden until we have data) -->
+            <div id="mode-card" class="hidden rounded-xl bg-indigo-50 border border-indigo-100 px-4 py-4 shadow-sm flex items-center justify-between">
+              <div class="flex flex-col">
+                <span class="text-xs uppercase tracking-wide text-indigo-800/70 font-semibold mb-1">Transport Mode</span>
+                <span id="result-mode" class="text-lg font-bold text-indigo-900 capitalize">—</span>
+              </div>
+              <div id="result-mode-icon" class="text-3xl">
+                —
+              </div>
+            </div>
+
+            <!-- Results cards (hidden until we have data) -->
+            <div id="results-card" class="hidden grid grid-cols-1 md:grid-cols-3 gap-4">
+              <!-- Total Cost -->
+              <div
+                class="rounded-xl bg-slate-900 text-slate-50 px-4 py-4 shadow-md shadow-slate-400/40 flex flex-col gap-2">
+                <span class="text-xs uppercase tracking-wide text-slate-300">Total Cost</span>
+                <span id="result-cost" class="text-xl font-semibold">
+                  —
+                </span>
+                <span class="text-[11px] text-slate-300">
+                  Estimated freight cost for this shipment.
+                </span>
+              </div>
+
+              <!-- Time Estimate -->
+              <div
+                class="rounded-xl bg-blue-600 text-slate-50 px-4 py-4 shadow-md shadow-blue-400/40 flex flex-col gap-2">
+                <span class="text-xs uppercase tracking-wide text-blue-100">Time Estimate</span>
+                <span id="result-time" class="text-xl font-semibold">
+                  —
+                </span>
+                <span class="text-[11px] text-blue-100/90">
+                  Approximate door-to-door transit time.
+                </span>
+              </div>
+
+              <!-- CO₂ Emissions -->
+              <div
+                class="rounded-xl bg-emerald-600 text-emerald-50 px-4 py-4 shadow-md shadow-emerald-400/50 flex flex-col gap-2">
+                <span class="text-xs uppercase tracking-wide text-emerald-100">CO₂ Emissions</span>
+                <span id="result-co2" class="text-xl font-semibold">
+                  —
+                </span>
+                <span class="text-[11px] text-emerald-100/90">
+                  Carbon footprint for the selected route.
+                </span>
+              </div>
+            </div>
+            </div>
+
+            <!-- Map Container -->
+            <div id="map" class="w-full h-[400px] mt-5 rounded-[10px] shadow-sm z-0 relative"></div>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script>
+    (function () {
+      const form = document.getElementById('route-form');
+      const submitButton = form.querySelector('button[type="submit"]');
+      const resultsCard = document.getElementById('results-card');
+      const modeCard = document.getElementById('mode-card');
+      const errorBox = document.getElementById('error-box');
+      const errorMessage = document.getElementById('error-message');
+
+      const modeEl = document.getElementById('result-mode');
+      const modeIconEl = document.getElementById('result-mode-icon');
+      const costEl = document.getElementById('result-cost');
+      const timeEl = document.getElementById('result-time');
+      const co2El = document.getElementById('result-co2');
+
+      const API_URL = 'http://127.0.0.1:5001/predict_route'; // match Flask server port
+
+      // Initialize Leaflet Map
+      let map = L.map('map').setView([22.9734, 78.6569], 5); // Center on India
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(map);
+      
+      let markers = []; // To keep track of current markers on the map
+      let routeLine = null; // To keep track of the polyline route
+
+      function setLoading(isLoading) {
+        if (!submitButton) return;
+        if (isLoading) {
+          submitButton.disabled = true;
+          submitButton.dataset.originalText = submitButton.textContent;
+          submitButton.textContent = 'Calculating...';
+          submitButton.classList.add('opacity-70', 'cursor-wait');
+        } else {
+          submitButton.disabled = false;
+          if (submitButton.dataset.originalText) {
+            submitButton.textContent = submitButton.dataset.originalText;
+          }
+          submitButton.classList.remove('opacity-70', 'cursor-wait');
+        }
+      }
+
+      async function geocodeLocation(cityName) {
+        try {
+          const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(cityName)}&format=json`;
+          const response = await fetch(url);
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          
+          const data = await response.json();
+          if (data && data.length > 0) {
+            return {
+              lat: parseFloat(data[0].lat),
+              lon: parseFloat(data[0].lon)
+            };
+          } else {
+            throw new Error(`City not found: ${cityName}`);
+          }
+        } catch (error) {
+          console.error("Geocoding Error: ", error);
+          throw error;
+        }
+      }
+
+      form.addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+        // Hide previous error
+        errorBox.classList.add('hidden');
+
+        const originCity = document.getElementById('origin').value;
+        const destinationCity = document.getElementById('destination').value;
+        const distance = parseFloat(document.getElementById('distance').value);
+        const weight = parseFloat(document.getElementById('weight').value);
+        const traffic = parseFloat(document.getElementById('traffic').value);
+        const transportMode = document.getElementById('transport_mode').value;
+
+        if (isNaN(distance) || isNaN(weight) || isNaN(traffic)) {
+          errorMessage.textContent = 'Please provide numeric values for distance, weight, and traffic.';
+          errorBox.classList.remove('hidden');
+          return;
+        }
+
+        setLoading(true);
+
+        try {
+          // Clear previous markers & route
+          markers.forEach(marker => map.removeLayer(marker));
+          markers = [];
+          
+          if (routeLine) {
+            map.removeLayer(routeLine);
+            routeLine = null;
+          }
+
+          // Geocode Origin & Destination
+          const originCoords = await geocodeLocation(originCity);
+          const destCoords = await geocodeLocation(destinationCity);
+          
+          console.log("Origin coordinates:", originCoords);
+          console.log("Destination coordinates:", destCoords);
+
+          // Add markers to map
+          const originMarker = L.marker([originCoords.lat, originCoords.lon])
+            .addTo(map)
+            .bindPopup(`<b>Origin</b><br>${originCity}`);
+          const destMarker = L.marker([destCoords.lat, destCoords.lon])
+            .addTo(map)
+            .bindPopup(`<b>Destination</b><br>${destinationCity}`);
+
+          markers.push(originMarker, destMarker);
+
+          // Draw the polyline route connecting origin and destination
+          routeLine = L.polyline(
+            [
+              [originCoords.lat, originCoords.lon],
+              [destCoords.lat, destCoords.lon]
+            ], 
+            { color: 'blue', weight: 4 }
+          ).addTo(map);
+
+          // Fit map bounds to encompass the printed route
+          map.fitBounds(routeLine.getBounds(), { padding: [50, 50] });
+
+          const requestPayload = {
+            distance: distance,
+            weight: weight,
+            traffic: traffic,
+            transport_mode: transportMode,
+          };
+          
+          console.log("Sending payload to backend:", requestPayload);
+
+          const response = await fetch(API_URL, {
+             method: 'POST',
+             headers: {
+               'Content-Type': 'application/json',
+             },
+             body: JSON.stringify(requestPayload),
+          });
+
+          if (!response.ok) {
+            let errorText = 'Unable to fetch route prediction.';
+            try {
+              const errData = await response.json();
+              if (errData && errData.error) {
+                errorText = errData.error;
+              }
+            } catch (e) {
+              // ignore JSON parse errors, keep generic error
+            }
+            throw new Error(errorText);
+          }
+
+          const data = await response.json();
+
+          if (!data.success || !data.data) {
+            throw new Error(data.error || 'Unexpected API response.');
+          }
+
+          const { cost, time, co2 } = data.data;
+          const returnedMode = data.transport_mode || transportMode;
+
+          costEl.textContent = `₹ ${Number(cost).toFixed(2)}`;
+          timeEl.textContent = `${Number(time).toFixed(2)} hours`;
+          co2El.textContent = `${Number(co2).toFixed(2)} kg CO₂`;
+
+          modeEl.textContent = returnedMode;
+          if (returnedMode === 'truck') {
+            modeIconEl.textContent = '🚚';
+          } else if (returnedMode === 'rail') {
+            modeIconEl.textContent = '🚆';
+          } else if (returnedMode === 'air') {
+            modeIconEl.textContent = '✈️';
+          } else {
+            modeIconEl.textContent = '📦';
+          }
+
+          // Show results cards
+          modeCard.classList.remove('hidden');
+          resultsCard.classList.remove('hidden');
+        } catch (err) {
+          errorMessage.textContent = err.message || 'Network error while fetching prediction.';
+          errorBox.classList.remove('hidden');
+        } finally {
+          setLoading(false);
+        }
+      });
+    })();
+  </script>
+</body>
+
+</html>
+
+
