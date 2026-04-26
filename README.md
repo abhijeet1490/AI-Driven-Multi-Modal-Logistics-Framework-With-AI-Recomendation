@@ -2,7 +2,7 @@
 
 ## 📋 Project Overview
 
-This is a modular and scalable prototype for an **AI-powered logistics optimization system**. The application allows users to input shipment details (Origin, Destination, Transport Mode, Weight, Distance, Traffic Level) and receive intelligent route recommendations alongside visual interactive mapping. 
+This is a modular and scalable prototype for an **AI-powered logistics optimization system**. The application allows users to input shipment details (Origin, Destination, Transport Mode, Weight, Distance, Traffic Level, and Road Quality) and receive intelligent route recommendations alongside visual interactive mapping. 
 
 The system yields three key metrics:
 
@@ -10,7 +10,7 @@ The system yields three key metrics:
 - **⏱️ Time Estimate** - Approximate transit time in hours
 - **🌱 CO₂ Emissions** - Carbon footprint in kilograms
 
-The system uses a machine learning model (RandomForest) trained on synthetic logistics data to predict these metrics, with a graceful fallback to mock calculations if the model is unavailable. It features interactive map visualizations using Leaflet and Nominatim geocoding.
+The system uses a machine learning model (RandomForest) trained on synthetic logistics data to predict these metrics, with a graceful fallback to mock calculations if the model is unavailable. It features interactive map visualizations using the Google Maps API for Places Autocomplete and real-time Directions routing.
 
 ---
 
@@ -39,13 +39,13 @@ The project follows a **modular 3-tier architecture**:
 ### 3. **Frontend** (`frontend/index.html`)
 - **Technology**: Vanilla HTML/CSS/JavaScript
 - **Styling**: Tailwind CSS (via CDN)
-- **Mapping**: Leaflet JS + OpenStreetMap + Nominatim API for geocoding
+- **Mapping**: Google Maps API (Places Autocomplete, Directions Service)
 - **Purpose**: Single-page web interface for user interaction
 - **Features**:
-  - Live Map visualization showing Origin/Destination markers
-  - Route tracing between shipping endpoints
-  - Transport Mode selection (Truck, Rail, Air)
+  - Live Google Map visualization with real road routes and distances
+  - Transport Mode selection (Truck, Rail, Air) with Road Quality (IRI) consideration
   - Interactive Results Dashboard
+  - Concurrent Multi-Modal Comparison Table with AI-driven recommendations
 
 ---
 
@@ -101,6 +101,10 @@ python backend/app.py
 ### **Step 2: Open the Frontend**
 
 Open `frontend/index.html` in your web browser.
+
+### localhost/ai-logistics-india/frontend/index.html
+
+### http://127.0.0.1:5500/ai-logistics-india/frontend/index.html
 
 ---
 

@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Recommendation | AI Multi-Modal Transport System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .gradient-header { background: linear-gradient(135deg, #0f2942 0%, #1a4a6b 50%, #0d6b5e 100%); }
+    .fade-in { animation: fadeIn 0.5s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    .spinner { border: 3px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; width: 28px; height: 28px; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .slider-thumb::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #1a4a6b; cursor: pointer; }
+    .best-col { background: #f0fdf4; border: 2px solid #22c55e; }
+    .worst-col { background: #fef2f2; }
+    .unsuitable { background: #f3f4f6; color: #9ca3af; }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+  <!-- ═══════════════════════ HEADER ═══════════════════════ -->
+  <header class="gradient-header text-white shadow-lg">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <span class="text-3xl">🚚</span>
+        <div>
+          <h1 class="text-xl font-bold tracking-wide">AI Multi-Modal Transport System</h1>
+          <p class="text-xs text-blue-200">Intelligent Logistics for Rural India</p>
+        </div>
+      </div>
+      <nav class="flex flex-wrap gap-x-5 gap-y-1 text-sm font-medium">
+        <a href="index.html" class="hover:text-blue-200 transition-colors">Home</a>
+        <a href="team.html" class="hover:text-blue-200 transition-colors">Our Team</a>
+        <a href="paper.html" class="hover:text-blue-200 transition-colors">Research Paper</a>
+        <a href="ai_recommend.html" class="border-b-2 border-green-300 text-green-300 pb-0.5">AI Recommendation</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════ HERO ═══════════════════════ -->
+  <section class="gradient-header text-white pt-10 pb-14 px-4 text-center">
+    <div class="max-w-2xl mx-auto">
+      <div class="inline-block bg-white/10 backdrop-blur-sm rounded-full px-4 py-1 text-sm font-medium mb-4 border border-white/20">
+        ✨ Powered by Gemini AI
+      </div>
+      <h2 class="text-3xl sm:text-4xl font-extrabold mb-3">🤖 AI-Powered Route Advisor</h2>
+      <p class="text-blue-100 text-base sm:text-lg">
+        Enter any transit points — malls, villages, farms, factories — and get intelligent transport advice tailored to Indian logistics.
+      </p>
+    </div>
+  </section>
+
+  <main class="max-w-3xl mx-auto px-4 -mt-6 pb-20 space-y-6">
+
+    <!-- ═══════════════════════ API KEY CARD ═══════════════════════ -->
+    <div class="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
+      <button id="toggleApiKey"
+        class="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-gray-50 transition-colors"
+        onclick="toggleApiSection()">
+        <span class="font-semibold text-gray-700 flex items-center gap-2">⚙️ Gemini API Key Configuration</span>
+        <span id="apiKeyStatus" class="text-sm font-medium text-gray-400">Click to expand</span>
+      </button>
+      <div id="apiKeySection" class="hidden px-5 pb-5 border-t border-gray-100">
+        <p class="text-sm text-gray-500 mt-3 mb-3">
+          Get your free API key at
+          <a href="https://aistudio.google.com/apikey" target="_blank" class="text-blue-600 hover:underline">aistudio.google.com/apikey</a>
+        </p>
+        <div class="flex gap-2">
+          <input id="apiKeyInput" type="password" placeholder="Paste your Gemini API key here..."
+            class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" />
+          <button onclick="saveApiKey()"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
+            Save
+          </button>
+        </div>
+        <div id="apiKeySaved" class="hidden mt-2 text-green-600 text-sm font-medium">✅ Key saved for this session.</div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════ MAIN FORM ═══════════════════════ -->
+    <div class="bg-white rounded-2xl shadow-md border border-gray-100 p-6">
+      <h3 class="text-lg font-bold text-gray-800 mb-5">Shipment Details</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+
+        <!-- FROM -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-600 mb-1">📍 Pickup Location</label>
+          <input id="fromLocation" type="text" placeholder='e.g., JK Temple, Kanpur'
+            class="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" />
+        </div>
+
+        <!-- TO -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-600 mb-1">📍 Delivery Location</label>
+          <input id="toLocation" type="text" placeholder='e.g., DLF Mall, Noida'
+            class="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" />
+        </div>
+
+        <!-- WEIGHT -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-600 mb-1">⚖️ Weight (kg)</label>
+          <input id="weight" type="number" placeholder="e.g., 500" min="1"
+            class="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" />
+        </div>
+
+        <!-- CARGO TYPE -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-600 mb-1">📦 Cargo Type</label>
+          <select id="cargoType"
+            class="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+            <option value="Agricultural Produce">🌾 Agricultural Produce</option>
+            <option value="Construction Materials">🧱 Construction Materials</option>
+            <option value="Consumer Goods">📦 Consumer Goods</option>
+            <option value="Medical Supplies">💊 Medical Supplies</option>
+            <option value="Fertilizer">🌿 Fertilizer</option>
+            <option value="General Cargo" selected>📦 General Cargo</option>
+          </select>
+        </div>
+
+        <!-- ROAD QUALITY -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-600 mb-1">🛣️ Road Quality</label>
+          <select id="roadQuality"
+            class="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+            <option value="paved">🛣️ Paved / National Highway</option>
+            <option value="mixed" selected>🛤️ Mixed State — Medium</option>
+            <option value="kaccha">🪨 Kaccha / Unpaved</option>
+          </select>
+        </div>
+
+        <!-- TRAFFIC LEVEL -->
+        <div class="sm:col-span-2">
+          <label class="block text-sm font-semibold text-gray-600 mb-2">
+            🚦 Traffic Level —
+            <span id="trafficLabel" class="text-green-600 font-bold">Low Traffic 🟢</span>
+          </label>
+          <input id="trafficSlider" type="range" min="1" max="10" value="3"
+            oninput="updateTrafficLabel(this.value)"
+            class="slider-thumb w-full h-2 rounded-lg bg-gray-200 accent-blue-600 cursor-pointer" />
+          <div class="flex justify-between text-xs text-gray-400 mt-1">
+            <span>1 — Very Low</span><span>5 — Moderate</span><span>10 — Gridlock</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- SUBMIT BUTTON -->
+      <button id="submitBtn" onclick="getRecommendation()"
+        class="mt-6 w-full gradient-header text-white font-bold py-3.5 rounded-xl text-base hover:opacity-90 transition-opacity shadow-md flex items-center justify-center gap-2">
+        🤖 Get AI Recommendation
+      </button>
+    </div>
+
+    <!-- ═══════════════════════ LOADING ═══════════════════════ -->
+    <div id="loadingSection" class="hidden bg-white rounded-2xl shadow-md border border-gray-100 p-8 text-center fade-in">
+      <div class="flex justify-center mb-4"><div class="spinner"></div></div>
+      <p id="loadingMsg" class="text-gray-600 font-medium text-sm">🔍 Analyzing route details...</p>
+    </div>
+
+    <!-- ═══════════════════════ ERROR ═══════════════════════ -->
+    <div id="errorSection" class="hidden bg-red-50 border border-red-200 rounded-2xl p-5 fade-in">
+      <p id="errorMsg" class="text-red-700 font-semibold text-sm"></p>
+      <p class="text-red-500 text-xs mt-1">Please check your API key and internet connection, then try again.</p>
+    </div>
+
+    <!-- ═══════════════════════ RESULTS ═══════════════════════ -->
+    <div id="resultsSection" class="hidden space-y-5 fade-in">
+
+      <!-- STEP 1: ROUTE INFO -->
+      <div class="bg-white rounded-2xl shadow-md border border-gray-100 p-5">
+        <h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Step 1 — Route Info</h4>
+        <div class="flex flex-wrap gap-4">
+          <div class="flex-1 min-w-[130px] bg-blue-50 rounded-xl p-3 text-center">
+            <p class="text-xs text-gray-500 mb-1">Estimated Distance</p>
+            <p id="resDistance" class="text-2xl font-extrabold text-blue-700"></p>
+          </div>
+          <div class="flex-1 min-w-[200px] bg-gray-50 rounded-xl p-3">
+            <p class="text-xs text-gray-500 mb-1">Distance Reasoning</p>
+            <p id="resDistanceReason" class="text-sm text-gray-700"></p>
+          </div>
+          <div class="flex-1 min-w-[200px] bg-gray-50 rounded-xl p-3">
+            <p class="text-xs text-gray-500 mb-1">Route Description</p>
+            <p id="resRouteDesc" class="text-sm text-gray-700"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2: RECOMMENDATION BANNER -->
+      <div id="resBanner" class="rounded-2xl shadow-md p-6 text-center fade-in">
+        <p class="text-sm font-semibold opacity-80 mb-1">Recommended Mode</p>
+        <p id="resBannerEmoji" class="text-5xl mb-2"></p>
+        <p id="resBannerMode" class="text-2xl font-extrabold"></p>
+        <p id="resBannerReason" class="text-sm mt-2 opacity-90 max-w-md mx-auto"></p>
+      </div>
+
+      <!-- STEP 3: COMPARISON TABLE -->
+      <div class="bg-white rounded-2xl shadow-md border border-gray-100 p-5 overflow-x-auto">
+        <h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Step 3 — Mode Comparison</h4>
+        <table class="w-full text-sm text-center border-collapse">
+          <thead>
+            <tr>
+              <th class="py-2 px-3 text-left text-gray-500 font-semibold">Metric</th>
+              <th id="thTruck" class="py-2 px-3 font-semibold rounded-t-lg">🚛 Truck</th>
+              <th id="thRail" class="py-2 px-3 font-semibold rounded-t-lg">🚆 Rail</th>
+              <th id="thThree" class="py-2 px-3 font-semibold rounded-t-lg">🛺 Three-Wheeler</th>
+            </tr>
+          </thead>
+          <tbody id="comparisonBody"></tbody>
+        </table>
+
+        <!-- COMBINATIONS -->
+        <div id="combinationsSection" class="hidden mt-5">
+          <h5 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Multi-Modal Combinations</h5>
+          <div id="combinationsGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+        </div>
+      </div>
+
+      <!-- STEP 4: SAVINGS -->
+      <div id="savingsCard" class="bg-green-50 border border-green-200 rounded-2xl p-5 fade-in">
+        <h4 class="text-xs font-bold text-green-600 uppercase tracking-widest mb-3">Step 4 — Savings Analysis</h4>
+        <p id="savingsText" class="text-gray-700 text-sm leading-relaxed"></p>
+        <p id="treesText" class="text-green-700 text-sm font-semibold mt-2"></p>
+      </div>
+
+      <!-- CONFIDENCE -->
+      <div class="bg-white rounded-2xl shadow-md border border-gray-100 p-5">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <div>
+            <p class="text-xs text-gray-400 uppercase tracking-widest font-bold mb-1">AI Confidence</p>
+            <p id="resConfidence" class="text-gray-700 font-semibold"></p>
+          </div>
+          <div class="text-right">
+            <p class="text-xs text-gray-400 uppercase tracking-widest font-bold mb-1">Key Highlights</p>
+            <p id="resHighlights" class="text-gray-700 text-sm max-w-xs text-right"></p>
+          </div>
+        </div>
+        <p id="resChallenges" class="text-gray-500 text-xs mt-3 border-t pt-3"></p>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ═══════════════════════ JAVASCRIPT ═══════════════════════ -->
+  <script>
+    // ── Utility ──────────────────────────────────────────────
+    const $ = id => document.getElementById(id);
+
+    function toggleApiSection() {
+      const sec = $('apiKeySection');
+      sec.classList.toggle('hidden');
+      $('apiKeyStatus').textContent = sec.classList.contains('hidden') ? 'Click to expand' : 'Click to collapse';
+      const saved = sessionStorage.getItem('gemini_api_key');
+      if (saved) { $('apiKeyInput').value = saved; $('apiKeySaved').classList.remove('hidden'); }
+    }
+
+    function saveApiKey() {
+      const key = $('apiKeyInput').value.trim();
+      if (!key) return;
+      sessionStorage.setItem('gemini_api_key', key);
+      $('apiKeySaved').classList.remove('hidden');
+      $('apiKeyStatus').textContent = '✅ Key saved';
+    }
+
+    function updateTrafficLabel(val) {
+      const el = $('trafficLabel');
+      val = parseInt(val);
+      if (val <= 3)      { el.textContent = 'Low Traffic 🟢';   el.className = 'text-green-600 font-bold'; }
+      else if (val <= 6) { el.textContent = 'Moderate 🟡';      el.className = 'text-yellow-500 font-bold'; }
+      else               { el.textContent = 'Heavy Traffic 🔴'; el.className = 'text-red-500 font-bold'; }
+    }
+
+    // ── Loading messages ──────────────────────────────────────
+    const loadingMessages = [
+      '🔍 Analyzing route details...',
+      '📡 Querying Gemini AI...',
+      '🗺️ Estimating real-world distance...',
+      '🚛 Computing truck logistics...',
+      '🚆 Evaluating rail suitability...',
+      '🛺 Calculating three-wheeler options...',
+      '♻️ Computing carbon footprint...',
+      '✅ Preparing your recommendation...',
+    ];
+    let loadingInterval = null;
+    function startLoadingMessages() {
+      let i = 0;
+      $('loadingMsg').textContent = loadingMessages[0];
+      loadingInterval = setInterval(() => {
+        i = (i + 1) % loadingMessages.length;
+        $('loadingMsg').textContent = loadingMessages[i];
+      }, 1800);
+    }
+    function stopLoadingMessages() { clearInterval(loadingInterval); }
+
+    // ── State helpers ─────────────────────────────────────────
+    function showSection(id) { $(id).classList.remove('hidden'); }
+    function hideSection(id) { $(id).classList.add('hidden'); }
+
+    // ── Main function ─────────────────────────────────────────
+    async function getRecommendation() {
+      const apiKey = sessionStorage.getItem('gemini_api_key') || $('apiKeyInput').value.trim();
+      if (!apiKey) {
+        toggleApiSection();
+        showError('Please enter and save your Gemini API key first.');
+        return;
+      }
+
+      const from      = $('fromLocation').value.trim();
+      const to        = $('toLocation').value.trim();
+      const weight    = parseFloat($('weight').value);
+      const cargo     = $('cargoType').value;
+      const road      = $('roadQuality').value;
+      const traffic   = parseInt($('trafficSlider').value);
+
+      if (!from || !to)         { showError('Please enter both Pickup and Delivery locations.'); return; }
+      if (!weight || weight < 1){ showError('Please enter a valid weight (≥ 1 kg).'); return; }
+
+      hideSection('errorSection');
+      hideSection('resultsSection');
+      showSection('loadingSection');
+      startLoadingMessages();
+      $('submitBtn').disabled = true;
+
+      const roadLabel = { paved: 'Paved / National Highway', mixed: 'Mixed State roads', kaccha: 'Kaccha / Unpaved village roads' }[road];
+
+      const prompt = `
+You are an expert Indian rural and urban logistics advisor.
+
+A shipment needs to be transported with these details:
+- From: ${from}
+- To: ${to}
+- Weight: ${weight} kg
+- Cargo Type: ${cargo}
+- Road Quality: ${roadLabel}
+- Traffic Level: ${traffic}/10
+
+YOUR TASK:
+First, estimate the realistic road distance in km between these two locations based on your knowledge of Indian geography.
+
+Then calculate metrics for each applicable transport mode using THESE EXACT FORMULAS:
+
+BASE CALCULATION RULES:
+
+TRUCK:
+- Cost (₹) = distance × 1.5 + weight × 0.05 + traffic × 8.0
+- Speed = max(20, 70 - 3 × traffic) km/h
+- Time = distance / speed
+- CO₂ = distance × 0.18 + weight × 0.0004 + traffic × 1.5
+- Road adjustments (truck only):
+  - mixed roads: cost×1.15, time×1.3, co2×1.2
+  - kaccha roads: cost×1.35, time×1.7, co2×1.45
+
+RAIL:
+- Cost (₹) = distance × 0.7 + weight × 0.03 + 8.0 (fixed terminal fee, ignore traffic for rail)
+- Speed = 50 km/h (steady)
+- Time = distance / speed × 1.2
+- CO₂ = distance × 0.09 + weight × 0.0002 + 1.0
+- Only available if distance > 50km
+- If distance < 50km: mark as "Not Suitable"
+
+THREE-WHEELER:
+- Base as Truck then: cost×0.6, time×1.4, co2×0.4
+- Same road quality adjustments as Truck
+- Only suitable if weight ≤ 500 kg
+- If weight > 500 kg: mark as "Not Suitable"
+
+MULTI-MODE COMBINATIONS (for medium distances 50–300 km):
+Suggest combinations like "Three-Wheeler + Rail": 3-Wheeler for first/last 20 km, Rail for middle portion.
+Calculate proportional costs per segment.
+
+Give a FINAL RECOMMENDATION with clear reasoning based on:
+- Cargo urgency/sensitivity (${cargo})
+- Road conditions (${roadLabel})
+- Cost vs time tradeoff
+- Environmental impact
+
+RESPOND ONLY WITH THIS EXACT JSON (no markdown, no extra text, pure JSON):
+
+{
+  "estimated_distance_km": <number>,
+  "distance_reasoning": "<brief explanation of how you estimated the distance>",
+  "route_description": "<1-2 sentence description of the route>",
+  "modes": [
+    {
+      "name": "Truck",
+      "emoji": "🚛",
+      "suitable": true,
+      "cost_inr": <number>,
+      "time_hours": <number with 1 decimal>,
+      "co2_kg": <number with 1 decimal>,
+      "note": "<any relevant note>"
+    },
+    {
+      "name": "Rail",
+      "emoji": "🚆",
+      "suitable": true or false,
+      "cost_inr": <number or null>,
+      "time_hours": <number or null>,
+      "co2_kg": <number or null>,
+      "note": "<why not suitable OR relevant note>"
+    },
+    {
+      "name": "Three-Wheeler",
+      "emoji": "🛺",
+      "suitable": true or false,
+      "cost_inr": <number or null>,
+      "time_hours": <number or null>,
+      "co2_kg": <number or null>,
+      "note": "<why not suitable OR relevant note>"
+    }
+  ],
+  "combinations": [
+    {
+      "name": "<combination name>",
+      "description": "<breakdown of segments>",
+      "cost_inr": <number>,
+      "time_hours": <number>,
+      "co2_kg": <number>
+    }
+  ],
+  "recommended_mode": "<mode name>",
+  "recommendation_reason": "<2-3 sentences explaining why this is best>",
+  "confidence": "High | Medium | Low",
+  "key_highlights": "<one sentence about the best aspects>",
+  "challenges": "<one sentence about challenges or things to be aware of>",
+  "cost_savings_amount": <number — savings vs worst mode, in ₹>,
+  "cost_savings_best": "<best mode name>",
+  "cost_savings_worst": "<worst mode name>",
+  "co2_savings_kg": <number — CO₂ saved vs worst mode>,
+  "trees_equivalent": "<X trees equivalent — use 21 kg CO₂ per tree per year>"
+}
+`;
+
+      try {
+        const res = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: prompt }] }],
+              generationConfig: { temperature: 0.1 }
+            })
+          }
+        );
+
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData?.error?.message || `API error ${res.status}`);
+        }
+
+        const data = await res.json();
+        let rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+        // Strip markdown code fences if present
+        rawText = rawText.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+
+        let parsed;
+        try { parsed = JSON.parse(rawText); }
+        catch (e) { throw new Error('AI response was not valid JSON. Please try again.'); }
+
+        renderResults(parsed);
+
+      } catch (err) {
+        showError(err.message || 'Could not reach Gemini AI. Check your connection.');
+      } finally {
+        stopLoadingMessages();
+        hideSection('loadingSection');
+        $('submitBtn').disabled = false;
+      }
+    }
+
+    // ── Render results ────────────────────────────────────────
+    function showError(msg) {
+      $('errorMsg').textContent = msg;
+      showSection('errorSection');
+      hideSection('loadingSection');
+      stopLoadingMessages();
+      $('submitBtn').disabled = false;
+    }
+
+    function fmt(n, prefix = '₹', decimals = 0) {
+      if (n == null) return '—';
+      return prefix + Number(n).toLocaleString('en-IN', { maximumFractionDigits: decimals });
+    }
+
+    function renderResults(d) {
+      // Step 1: Route info
+      $('resDistance').textContent    = d.estimated_distance_km + ' km';
+      $('resDistanceReason').textContent = d.distance_reasoning || '';
+      $('resRouteDesc').textContent   = d.route_description || '';
+
+      // Step 2: Banner
+      const modeColors = {
+        'Truck':         'bg-blue-100 text-blue-900',
+        'Rail':          'bg-purple-100 text-purple-900',
+        'Three-Wheeler': 'bg-orange-100 text-orange-900',
+      };
+      const modeEmojis = { 'Truck': '🚛', 'Rail': '🚆', 'Three-Wheeler': '🛺' };
+      const banner = $('resBanner');
+      banner.className = `rounded-2xl shadow-md p-6 text-center fade-in ${modeColors[d.recommended_mode] || 'bg-green-100 text-green-900'}`;
+      $('resBannerEmoji').textContent  = modeEmojis[d.recommended_mode] || '✅';
+      $('resBannerMode').textContent   = d.recommended_mode;
+      $('resBannerReason').textContent = d.recommendation_reason || '';
+
+      // Step 3: Table
+      const modes = d.modes || [];
+      const suitableCosts = modes.filter(m => m.suitable).map(m => m.cost_inr);
+      const minCost = Math.min(...suitableCosts);
+      const maxCost = Math.max(...suitableCosts);
+
+      // Header highlights
+      modes.forEach((m, i) => {
+        const th = [$('thTruck'), $('thRail'), $('thThree')][i];
+        if (!th) return;
+        if (!m.suitable) { th.className = 'py-2 px-3 font-semibold unsuitable'; return; }
+        const isBest  = m.cost_inr === minCost;
+        const isWorst = m.cost_inr === maxCost && m.cost_inr !== minCost;
+        th.className = `py-2 px-3 font-semibold rounded-t-lg ${isBest ? 'text-green-700' : isWorst ? 'text-red-500' : 'text-gray-700'}`;
+      });
+
+      const rows = [
+        { label: '💰 Cost (₹)',   key: 'cost_inr',   fn: v => fmt(v, '₹', 0),          isBestMin: true  },
+        { label: '⏱ Time (hrs)',  key: 'time_hours',  fn: v => v != null ? v.toFixed(1) + ' hrs' : '—', isBestMin: true  },
+        { label: '🌱 CO₂ (kg)',   key: 'co2_kg',     fn: v => v != null ? v.toFixed(1) + ' kg'  : '—', isBestMin: true  },
+      ];
+
+      const tbody = $('comparisonBody');
+      tbody.innerHTML = '';
+
+      rows.forEach(row => {
+        const vals = modes.map(m => m.suitable ? m[row.key] : null);
+        const suitableVals = vals.filter(v => v != null);
+        const best  = row.isBestMin ? Math.min(...suitableVals) : Math.max(...suitableVals);
+        const worst = row.isBestMin ? Math.max(...suitableVals) : Math.min(...suitableVals);
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td class="py-2 px-3 text-left text-gray-600 font-medium border-t border-gray-100">${row.label}</td>` +
+          modes.map((m, i) => {
+            const v = vals[i];
+            let cls = 'py-2 px-3 border-t border-gray-100 ';
+            if (!m.suitable || v == null) cls += 'unsuitable italic';
+            else if (v === best)  cls += 'best-col font-bold text-green-700';
+            else if (v === worst && best !== worst) cls += 'worst-col text-red-400';
+            else cls += 'text-gray-700';
+            return `<td class="${cls}">${m.suitable ? row.fn(v) : '❌ Not Suitable'}</td>`;
+          }).join('') +
+          '</tr>';
+        tbody.appendChild(tr);
+      });
+
+      // Notes row
+      const notesTr = document.createElement('tr');
+      notesTr.innerHTML = `<td class="py-2 px-3 text-left text-gray-400 text-xs font-medium border-t border-gray-100">Notes</td>` +
+        modes.map(m => `<td class="py-2 px-3 border-t border-gray-100 text-xs text-gray-400 italic">${m.note || ''}</td>`).join('');
+      tbody.appendChild(notesTr);
+
+      // Combinations
+      if (d.combinations && d.combinations.length > 0) {
+        showSection('combinationsSection');
+        const grid = $('combinationsGrid');
+        grid.innerHTML = '';
+        d.combinations.forEach(c => {
+          const card = document.createElement('div');
+          card.className = 'bg-blue-50 border border-blue-200 rounded-xl p-3';
+          card.innerHTML = `
+            <p class="font-bold text-blue-800 text-sm mb-1">${c.name}</p>
+            <p class="text-xs text-blue-600 mb-2">${c.description}</p>
+            <div class="flex gap-3 text-xs text-blue-700 font-semibold">
+              <span>₹${Number(c.cost_inr).toLocaleString('en-IN')}</span>
+              <span>${c.time_hours?.toFixed(1)} hrs</span>
+              <span>${c.co2_kg?.toFixed(1)} kg CO₂</span>
+            </div>`;
+          grid.appendChild(card);
+        });
+      } else {
+        hideSection('combinationsSection');
+      }
+
+      // Step 4: Savings
+      if (d.cost_savings_amount > 0) {
+        $('savingsText').innerHTML = `By choosing <strong>${d.cost_savings_best}</strong> over <strong>${d.cost_savings_worst}</strong>: Save <strong>₹${Number(d.cost_savings_amount).toLocaleString('en-IN')}</strong> and <strong>${d.co2_savings_kg?.toFixed(1)} kg CO₂</strong>.`;
+        $('treesText').textContent = d.trees_equivalent ? `🌳 ${d.trees_equivalent}` : '';
+        showSection('savingsCard');
+      } else {
+        hideSection('savingsCard');
+      }
+
+      // Confidence & highlights
+      const confColors = { High: 'text-green-600', Medium: 'text-yellow-500', Low: 'text-red-500' };
+      $('resConfidence').className = `font-semibold ${confColors[d.confidence] || 'text-gray-700'}`;
+      $('resConfidence').textContent = d.confidence || 'N/A';
+      $('resHighlights').textContent  = d.key_highlights || '';
+      $('resChallenges').textContent  = d.challenges ? '⚠️ ' + d.challenges : '';
+
+      showSection('resultsSection');
+      $('resultsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  </script>
+</body>
+</html>

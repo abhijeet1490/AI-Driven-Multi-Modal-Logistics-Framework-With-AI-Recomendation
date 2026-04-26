@@ -9,13 +9,9 @@
   <!-- Inter font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <!-- Leaflet CSS removed, Google Maps uses dynamically injected styles -->
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -40,7 +36,8 @@
   <div class="min-h-screen flex flex-col">
     <!-- Header -->
     <header class="border-b border-slate-200 bg-gradient-to-r from-slateBlue to-emerald shadow-sm">
-      <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      <div
+        class="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
           <h1 class="text-xl sm:text-2xl font-semibold text-white tracking-tight">
             AI Multi-Modal Transport System
@@ -49,12 +46,12 @@
             Intelligent route planning with cost, time, and CO₂ insights.
           </p>
         </div>
-        <div class="flex items-center gap-2 text-xs sm:text-sm text-slate-100/80">
-          <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-slate-900/20 border border-slate-100/10">
-            <span class="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            Dashboard
-          </span>
-        </div>
+        <nav class="flex items-center gap-6 text-sm font-medium text-slate-100/80">
+          <a href="index.html" class="text-white border-b-2 border-white pb-0.5">Home</a>
+          <a href="team.html" class="hover:text-white transition">Our Team</a>
+          <a href="paper.html" class="hover:text-white transition">Research Paper</a>
+          <a href="ai_recommend.html" class="hover:text-white transition">AI Recommendation</a>
+        </nav>
       </div>
     </header>
 
@@ -64,8 +61,7 @@
         <!-- Responsive 2-column grid -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
           <!-- Left column: Input form card -->
-          <section
-            class="bg-white rounded-2xl shadow-md shadow-slate-200/70 border border-slate-100 p-6 sm:p-8">
+          <section class="bg-white rounded-2xl shadow-md shadow-slate-200/70 border border-slate-100 p-6 sm:p-8">
             <h2 class="text-lg font-semibold text-slate-900 mb-1">
               Shipment Details
             </h2>
@@ -127,6 +123,22 @@
                 </p>
               </div>
 
+              <!-- Road Quality -->
+              <div id="road-quality-container" class="space-y-1.5 hidden">
+                <label for="road_quality" class="block text-sm font-medium text-slate-700">
+                  Road Quality
+                </label>
+                <select id="road_quality" name="road_quality" required
+                  class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                  <option value="1" selected>Paved (National Highway)</option>
+                  <option value="5">Mixed (State Road)</option>
+                  <option value="9">Kaccha (Unpaved/Village)</option>
+                </select>
+                <p class="text-xs text-slate-400">
+                  IRI Score: 1 = smooth highway, 9 = rough unpaved road
+                </p>
+              </div>
+
               <!-- Transport Mode -->
               <div class="space-y-1.5">
                 <label for="transport_mode" class="block text-sm font-medium text-slate-700">
@@ -136,7 +148,7 @@
                   class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
                   <option value="truck">Truck</option>
                   <option value="rail">Rail</option>
-                  <option value="air">Air</option>
+                  <option value="three_wheeler">Three Wheeler</option>
                 </select>
               </div>
 
@@ -149,10 +161,13 @@
               </div>
             </form>
           </section>
+          
+          <hr class="border-slate-200 lg:hidden" />
 
           <!-- Right column: Results dashboard -->
-          <section
-            class="bg-white rounded-2xl shadow-md shadow-slate-200/70 border border-slate-100 p-6 sm:p-8 min-h-[200px] space-y-4">
+          <div class="space-y-6 flex flex-col">
+            <section
+              class="bg-white rounded-2xl shadow-md shadow-slate-200/70 border border-slate-100 p-6 sm:p-8 min-h-[200px] space-y-4">
             <h2 class="text-lg font-semibold text-slate-900">
               Results Dashboard
             </h2>
@@ -167,9 +182,11 @@
             </div>
 
             <!-- Transport Mode Display (hidden until we have data) -->
-            <div id="mode-card" class="hidden rounded-xl bg-indigo-50 border border-indigo-100 px-4 py-4 shadow-sm flex items-center justify-between">
+            <div id="mode-card"
+              class="hidden rounded-xl bg-indigo-50 border border-indigo-100 px-4 py-4 shadow-sm flex items-center justify-between">
               <div class="flex flex-col">
-                <span class="text-xs uppercase tracking-wide text-indigo-800/70 font-semibold mb-1">Transport Mode</span>
+                <span class="text-xs uppercase tracking-wide text-indigo-800/70 font-semibold mb-1">Transport
+                  Mode</span>
                 <span id="result-mode" class="text-lg font-bold text-indigo-900 capitalize">—</span>
               </div>
               <div id="result-mode-icon" class="text-3xl">
@@ -215,20 +232,187 @@
                 </span>
               </div>
             </div>
+          </section>
+
+          <!-- Loading Skeleton for Comparison -->
+          <section id="comparison-skeleton" class="hidden bg-white rounded-2xl shadow-md shadow-slate-200/70 border border-slate-100 p-6 sm:p-8 space-y-4 animate-pulse">
+            <div class="h-5 bg-slate-200 rounded w-48"></div>
+            <div class="h-32 bg-slate-200 rounded-xl w-full"></div>
+          </section>
+
+          <!-- Multi-Modal Comparison -->
+          <section id="comparison-section" class="hidden bg-white rounded-2xl shadow-md shadow-slate-200/70 border border-slate-100 p-6 sm:p-8 space-y-4">
+            <h3 class="text-lg font-semibold text-slate-900">Multi-Modal Comparison</h3>
+            <div class="overflow-hidden rounded-xl border border-slate-200 shadow-sm bg-white">
+              <table class="w-full text-left text-sm">
+                <thead class="bg-gradient-to-r from-slateBlue to-slate-800 border-b border-slate-200 text-white">
+                  <tr>
+                    <th class="px-3 py-3 font-medium text-slate-200">Metric</th>
+                    <th class="px-3 py-3 font-bold text-white text-center"><span class="text-xl inline-block mb-1">🚚</span><br>Truck</th>
+                    <th class="px-3 py-3 font-bold text-white text-center"><span class="text-xl inline-block mb-1">🚆</span><br>Rail</th>
+                    <th class="px-3 py-3 font-bold text-white text-center"><span class="text-xl inline-block mb-1">🛺</span><br>Three Wheeler</th>
+                  </tr>
+                </thead>
+              <tbody class="divide-y divide-slate-100">
+                <!-- Cost Row -->
+                <tr class="border-l-4 border-blue-500 bg-white">
+                  <td class="px-3 py-3 text-slate-600 font-medium">💰 Cost (₹)</td>
+                  <td id="comp-cost-truck" class="px-3 py-3 text-center font-medium"></td>
+                  <td id="comp-cost-rail" class="px-3 py-3 text-center font-medium"></td>
+                  <td id="comp-cost-three-wheeler" class="px-3 py-3 text-center font-medium"></td>
+                </tr>
+                <!-- Time Row -->
+                <tr class="border-l-4 border-purple-500 bg-slate-50">
+                  <td class="px-3 py-3 text-slate-600 font-medium">⏱ Time (hrs)</td>
+                  <td id="comp-time-truck" class="px-3 py-3 text-center font-medium"></td>
+                  <td id="comp-time-rail" class="px-3 py-3 text-center font-medium"></td>
+                  <td id="comp-time-three-wheeler" class="px-3 py-3 text-center font-medium"></td>
+                </tr>
+                <!-- CO2 Row -->
+                <tr class="border-l-4 border-emerald-500 bg-white">
+                  <td class="px-3 py-3 text-slate-600 font-medium">🌱 CO₂ (kg)</td>
+                  <td id="comp-co2-truck" class="px-3 py-3 text-center font-medium"></td>
+                  <td id="comp-co2-rail" class="px-3 py-3 text-center font-medium"></td>
+                  <td id="comp-co2-three-wheeler" class="px-3 py-3 text-center font-medium"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
+            <span class="text-slate-600 font-medium">Recommended Mode:</span>
+            <span id="recommended-badge"
+              class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-600 text-white font-bold shadow-md shadow-emerald-600/30 text-base">
+              —
+            </span>
+          </div>
+        </section>
+
+          <!-- Map Section -->
+          <section class="bg-white rounded-2xl shadow-md shadow-slate-200/70 border border-slate-100 p-6 sm:p-8 space-y-4">
+            <h2 class="text-lg font-semibold text-slate-900 mb-1">
+              📍 Route Planner
+            </h2>
+            
+            <!-- Search Controls -->
+            <div class="flex flex-col sm:flex-row gap-3">
+              <input id="pickup-location" type="text" placeholder="Pickup Location"
+                class="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm" />
+              <input id="drop-location" type="text" placeholder="Drop Location"
+                class="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm" />
             </div>
 
             <!-- Map Container -->
-            <div id="map" class="w-full h-[400px] mt-5 rounded-[10px] shadow-sm z-0 relative"></div>
+            <div class="relative w-full h-[400px] border border-slate-200 shadow-md rounded-xl overflow-hidden mt-4">
+              <!-- Info Box Overlay -->
+              <div id="route-info"
+                class="absolute bottom-4 right-4 z-10 bg-white/95 px-4 py-2 rounded-lg shadow-lg backdrop-blur-sm text-sm font-semibold text-slate-800 hidden border border-slate-200">
+                Distance: <span id="info-dist" class="text-emerald-600">—</span> km
+              </div>
+
+              <div id="map" class="w-full h-full bg-slate-100"></div>
+            </div>
           </section>
         </div>
-      </div>
-    </main>
+  </div>
+  </div>
+  </main>
   </div>
 
-  <!-- Leaflet JS -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <!-- Google Maps API -->
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=-key-paste-here-&libraries=places&callback=initMap"></script>
   <script>
+    let map;
+    let directionsService;
+    let directionsRenderer;
+    let pickupAutocomplete;
+    let dropAutocomplete;
+    let pickupPlace = null;
+    let dropPlace = null;
+
+    function initMap() {
+      // Initialize map centered on India
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: 20.5937, lng: 78.9629 },
+        zoom: 5,
+        mapTypeControl: false,
+        streetViewControl: false,
+      });
+
+      directionsService = new google.maps.DirectionsService();
+      directionsRenderer = new google.maps.DirectionsRenderer({
+        map: map,
+        polylineOptions: {
+          strokeColor: "blue",
+          strokeWeight: 4,
+          strokeOpacity: 0.7
+        }
+      });
+
+      const options = {
+        componentRestrictions: { country: "in" },
+        fields: ["geometry", "name", "formatted_address"]
+      };
+
+      const pickupInput = document.getElementById("pickup-location");
+      const dropInput = document.getElementById("drop-location");
+
+      pickupAutocomplete = new google.maps.places.Autocomplete(pickupInput, options);
+      dropAutocomplete = new google.maps.places.Autocomplete(dropInput, options);
+
+      pickupAutocomplete.addListener("place_changed", () => {
+        pickupPlace = pickupAutocomplete.getPlace();
+        calculateAndDisplayRoute();
+      });
+
+      dropAutocomplete.addListener("place_changed", () => {
+        dropPlace = dropAutocomplete.getPlace();
+        calculateAndDisplayRoute();
+      });
+    }
+
+    function calculateAndDisplayRoute() {
+      if (!pickupPlace || !pickupPlace.geometry || !dropPlace || !dropPlace.geometry) {
+        return;
+      }
+
+      directionsService.route(
+        {
+          origin: pickupPlace.geometry.location,
+          destination: dropPlace.geometry.location,
+          travelMode: google.maps.TravelMode.DRIVING,
+        },
+        (response, status) => {
+          if (status === "OK") {
+            directionsRenderer.setDirections(response);
+
+            const route = response.routes[0];
+            let totalDistance = 0;
+            let totalDuration = 0;
+
+            for (let i = 0; i < route.legs.length; i++) {
+              totalDistance += route.legs[i].distance.value;
+              totalDuration += route.legs[i].duration.value;
+            }
+
+            const distanceInKm = (totalDistance / 1000).toFixed(1);
+            const durationInHrs = (totalDuration / 3600).toFixed(1);
+
+            // Auto-fill existing form inputs
+            document.getElementById("distance").value = Math.round(distanceInKm);
+            document.getElementById("origin").value = pickupPlace.name || pickupPlace.formatted_address || document.getElementById("pickup-location").value;
+            document.getElementById("destination").value = dropPlace.name || dropPlace.formatted_address || document.getElementById("drop-location").value;
+
+            // Show info box on map
+            document.getElementById("info-dist").textContent = distanceInKm;
+            document.getElementById("route-info").classList.remove("hidden");
+          } else {
+            window.alert("Directions request failed due to " + status);
+          }
+        }
+      );
+    }
+
     (function () {
       const form = document.getElementById('route-form');
       const submitButton = form.querySelector('button[type="submit"]');
@@ -245,14 +429,19 @@
 
       const API_URL = 'http://127.0.0.1:5001/predict_route'; // match Flask server port
 
-      // Initialize Leaflet Map
-      let map = L.map('map').setView([22.9734, 78.6569], 5); // Center on India
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      }).addTo(map);
+      const transportModeInput = document.getElementById('transport_mode');
+      const roadQualityContainer = document.getElementById('road-quality-container');
       
-      let markers = []; // To keep track of current markers on the map
-      let routeLine = null; // To keep track of the polyline route
+      function toggleRoadQuality() {
+        if (transportModeInput.value === 'truck' || transportModeInput.value === 'three_wheeler') {
+          roadQualityContainer.classList.remove('hidden');
+        } else {
+          roadQualityContainer.classList.add('hidden');
+        }
+      }
+      
+      transportModeInput.addEventListener('change', toggleRoadQuality);
+      toggleRoadQuality(); // Initialize on page load
 
       function setLoading(isLoading) {
         if (!submitButton) return;
@@ -270,45 +459,20 @@
         }
       }
 
-      async function geocodeLocation(cityName) {
-        try {
-          const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(cityName)}&format=json`;
-          const response = await fetch(url);
-          
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          
-          const data = await response.json();
-          if (data && data.length > 0) {
-            return {
-              lat: parseFloat(data[0].lat),
-              lon: parseFloat(data[0].lon)
-            };
-          } else {
-            throw new Error(`City not found: ${cityName}`);
-          }
-        } catch (error) {
-          console.error("Geocoding Error: ", error);
-          throw error;
-        }
-      }
-
       form.addEventListener('submit', async function (event) {
         event.preventDefault();
 
         // Hide previous error
         errorBox.classList.add('hidden');
 
-        const originCity = document.getElementById('origin').value;
-        const destinationCity = document.getElementById('destination').value;
         const distance = parseFloat(document.getElementById('distance').value);
         const weight = parseFloat(document.getElementById('weight').value);
         const traffic = parseFloat(document.getElementById('traffic').value);
+        const roadQuality = parseInt(document.getElementById('road_quality').value);
         const transportMode = document.getElementById('transport_mode').value;
 
-        if (isNaN(distance) || isNaN(weight) || isNaN(traffic)) {
-          errorMessage.textContent = 'Please provide numeric values for distance, weight, and traffic.';
+        if (isNaN(distance) || isNaN(weight) || isNaN(traffic) || isNaN(roadQuality)) {
+          errorMessage.textContent = 'Please provide numeric values for distance, weight, traffic, and road quality.';
           errorBox.classList.remove('hidden');
           return;
         }
@@ -316,104 +480,122 @@
         setLoading(true);
 
         try {
-          // Clear previous markers & route
-          markers.forEach(marker => map.removeLayer(marker));
-          markers = [];
-          
-          if (routeLine) {
-            map.removeLayer(routeLine);
-            routeLine = null;
-          }
+          const compSection = document.getElementById('comparison-section');
+          const compSkeleton = document.getElementById('comparison-skeleton');
 
-          // Geocode Origin & Destination
-          const originCoords = await geocodeLocation(originCity);
-          const destCoords = await geocodeLocation(destinationCity);
-          
-          console.log("Origin coordinates:", originCoords);
-          console.log("Destination coordinates:", destCoords);
-
-          // Add markers to map
-          const originMarker = L.marker([originCoords.lat, originCoords.lon])
-            .addTo(map)
-            .bindPopup(`<b>Origin</b><br>${originCity}`);
-          const destMarker = L.marker([destCoords.lat, destCoords.lon])
-            .addTo(map)
-            .bindPopup(`<b>Destination</b><br>${destinationCity}`);
-
-          markers.push(originMarker, destMarker);
-
-          // Draw the polyline route connecting origin and destination
-          routeLine = L.polyline(
-            [
-              [originCoords.lat, originCoords.lon],
-              [destCoords.lat, destCoords.lon]
-            ], 
-            { color: 'blue', weight: 4 }
-          ).addTo(map);
-
-          // Fit map bounds to encompass the printed route
-          map.fitBounds(routeLine.getBounds(), { padding: [50, 50] });
+          compSection.classList.add('hidden');
+          compSkeleton.classList.remove('hidden');
 
           const requestPayload = {
             distance: distance,
             weight: weight,
             traffic: traffic,
+            road_quality: roadQuality,
             transport_mode: transportMode,
           };
-          
-          console.log("Sending payload to backend:", requestPayload);
 
-          const response = await fetch(API_URL, {
-             method: 'POST',
-             headers: {
-               'Content-Type': 'application/json',
-             },
-             body: JSON.stringify(requestPayload),
+          const modes = ['truck', 'rail', 'three_wheeler'];
+          const fetchPromises = modes.map(mode => {
+            const payload = { ...requestPayload, transport_mode: mode };
+            if (mode !== 'truck' && mode !== 'three_wheeler') {
+              payload.road_quality = 1;
+            }
+            return fetch(API_URL, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload),
+            }).then(async res => {
+              if (!res.ok) {
+                let errorText = 'API Error';
+                try {
+                  const errData = await res.json();
+                  if (errData && errData.error) errorText = errData.error;
+                } catch (e) { }
+                throw new Error(errorText);
+              }
+              const data = await res.json();
+              if (!data.success || !data.data) throw new Error('Unexpected API response.');
+              return data;
+            });
           });
 
-          if (!response.ok) {
-            let errorText = 'Unable to fetch route prediction.';
-            try {
-              const errData = await response.json();
-              if (errData && errData.error) {
-                errorText = errData.error;
-              }
-            } catch (e) {
-              // ignore JSON parse errors, keep generic error
-            }
-            throw new Error(errorText);
-          }
+          // Await all API calls concurrently
+          const results = await Promise.all(fetchPromises);
 
-          const data = await response.json();
+          const dataMap = {};
+          results.forEach((res, index) => {
+            dataMap[modes[index]] = res.data;
+          });
 
-          if (!data.success || !data.data) {
-            throw new Error(data.error || 'Unexpected API response.');
-          }
+          // Update main single result display for the chosen mode
+          const chosenData = dataMap[transportMode];
+          if (!chosenData) throw new Error('Missing data for selected mode');
 
-          const { cost, time, co2 } = data.data;
-          const returnedMode = data.transport_mode || transportMode;
+          costEl.textContent = `₹ ${Number(chosenData.cost).toFixed(2)}`;
+          timeEl.textContent = `${Number(chosenData.time).toFixed(2)} hours`;
+          co2El.textContent = `${Number(chosenData.co2).toFixed(2)} kg CO₂`;
 
-          costEl.textContent = `₹ ${Number(cost).toFixed(2)}`;
-          timeEl.textContent = `${Number(time).toFixed(2)} hours`;
-          co2El.textContent = `${Number(co2).toFixed(2)} kg CO₂`;
+          modeEl.textContent = transportMode;
+          if (transportMode === 'truck') modeIconEl.textContent = '🚚';
+          else if (transportMode === 'rail') modeIconEl.textContent = '🚆';
+          else if (transportMode === 'three_wheeler') modeIconEl.textContent = '🛺';
+          else modeIconEl.textContent = '📦';
 
-          modeEl.textContent = returnedMode;
-          if (returnedMode === 'truck') {
-            modeIconEl.textContent = '🚚';
-          } else if (returnedMode === 'rail') {
-            modeIconEl.textContent = '🚆';
-          } else if (returnedMode === 'air') {
-            modeIconEl.textContent = '✈️';
-          } else {
-            modeIconEl.textContent = '📦';
-          }
-
-          // Show results cards
           modeCard.classList.remove('hidden');
           resultsCard.classList.remove('hidden');
+
+          // Build comparison table
+          const costVals = [dataMap.truck.cost, dataMap.rail.cost, dataMap.three_wheeler.cost];
+          const timeVals = [dataMap.truck.time, dataMap.rail.time, dataMap.three_wheeler.time];
+          const co2Vals = [dataMap.truck.co2, dataMap.rail.co2, dataMap.three_wheeler.co2];
+
+          const minCost = Math.min(...costVals), maxCost = Math.max(...costVals);
+          const minTime = Math.min(...timeVals), maxTime = Math.max(...timeVals);
+          const minCo2 = Math.min(...co2Vals), maxCo2 = Math.max(...co2Vals);
+
+          const setCell = (id, val, min, max) => {
+            const el = document.getElementById(id);
+            el.textContent = Number(val).toFixed(2);
+            el.className = "px-3 py-3 text-center font-medium"; // reset classes
+            if (val === min) el.classList.add('bg-emerald-100', 'text-emerald-800');
+            else if (val === max) el.classList.add('bg-red-50', 'text-red-800');
+            else el.classList.add('text-slate-700');
+          };
+
+          setCell('comp-cost-truck', dataMap.truck.cost, minCost, maxCost);
+          setCell('comp-cost-rail', dataMap.rail.cost, minCost, maxCost);
+          setCell('comp-cost-three-wheeler', dataMap.three_wheeler.cost, minCost, maxCost);
+
+          setCell('comp-time-truck', dataMap.truck.time, minTime, maxTime);
+          setCell('comp-time-rail', dataMap.rail.time, minTime, maxTime);
+          setCell('comp-time-three-wheeler', dataMap.three_wheeler.time, minTime, maxTime);
+
+          setCell('comp-co2-truck', dataMap.truck.co2, minCo2, maxCo2);
+          setCell('comp-co2-rail', dataMap.rail.co2, minCo2, maxCo2);
+          setCell('comp-co2-three-wheeler', dataMap.three_wheeler.co2, minCo2, maxCo2);
+
+          // Calculate recommended mode
+          let bestMode = 'truck';
+          let minScore = Infinity;
+          modes.forEach(mode => {
+            const score = (0.4 * dataMap[mode].cost) + (0.4 * dataMap[mode].time) + (0.2 * dataMap[mode].co2);
+            if (score < minScore) {
+              minScore = score;
+              bestMode = mode;
+            }
+          });
+
+          const badgeMap = { 'truck': '🚚 Truck', 'rail': '🚆 Rail', 'three_wheeler': '🛺 Three Wheeler' };
+          document.getElementById('recommended-badge').textContent = badgeMap[bestMode];
+
+          compSkeleton.classList.add('hidden');
+          compSection.classList.remove('hidden');
+
         } catch (err) {
           errorMessage.textContent = err.message || 'Network error while fetching prediction.';
           errorBox.classList.remove('hidden');
+          const compSkeleton = document.getElementById('comparison-skeleton');
+          if (compSkeleton) compSkeleton.classList.add('hidden');
         } finally {
           setLoading(false);
         }
@@ -423,5 +605,3 @@
 </body>
 
 </html>
-
-

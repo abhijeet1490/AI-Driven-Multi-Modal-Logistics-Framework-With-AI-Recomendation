@@ -9,7 +9,7 @@ class PredictionResult:
     co2: float
 
 def make_mock_prediction(
-    distance_km: float, weight_kg: float, traffic_level: float, transport_mode: str
+    distance_km: float, weight_kg: float, traffic_level: float, transport_mode: str, road_quality: int = 1
 ) -> PredictionResult:
     """
     Simple deterministic formulas used when the ML model is not available.
@@ -27,12 +27,7 @@ def make_mock_prediction(
         base_speed_kmph = 50.0  # Steady but slower
         co2_per_km = 0.08       # More eco-friendly
         traffic_level = 1       # Rails largely unaffected by highway traffic
-    elif transport_mode == 'air':
-        base_cost_per_km = 5.0
-        cost_per_kg = 0.50
-        base_speed_kmph = 500.0 # Very fast
-        co2_per_km = 0.8        # High emissions
-        traffic_level = 1       # Air largely unaffected by highway traffic
+    # Default is truck (original values)
     # Default is truck (original values)
 
     traffic_surcharge = 6.0
@@ -53,10 +48,25 @@ def make_mock_prediction(
         + traffic_level * co2_traffic_factor
     )
 
+    if transport_mode == 'three_wheeler':
+        cost *= 0.6
+        time_hours *= 1.4
+        co2_kg *= 0.4
+
+    if transport_mode.lower() in ['truck', 'three_wheeler']:
+        if road_quality == 5:
+            time_hours *= 1.3
+            cost *= 1.15
+            co2_kg *= 1.2
+        elif road_quality == 9:
+            time_hours *= 1.7
+            cost *= 1.35
+            co2_kg *= 1.45
+
     return PredictionResult(cost=cost, time=time_hours, co2=co2_kg)
 
 def make_model_prediction(
-    model: Any, distance_km: float, weight_kg: float, traffic_level: float, transport_mode: str
+    model: Any, distance_km: float, weight_kg: float, traffic_level: float, transport_mode: str, road_quality: int = 1
 ) -> PredictionResult:
     """
     Use the trained model to make a prediction. 
@@ -74,13 +84,23 @@ def make_model_prediction(
         cost_multiplier = 0.7
         time_multiplier = 1.2
         co2_multiplier = 0.5
-    elif transport_mode == 'air':
-        cost_multiplier = 2.5
-        time_multiplier = 0.4
-        co2_multiplier = 1.3
+    elif transport_mode == 'three_wheeler':
+        cost_multiplier = 0.6
+        time_multiplier = 1.4
+        co2_multiplier = 0.4
 
     cost *= cost_multiplier
     time_hours *= time_multiplier
     co2_kg *= co2_multiplier
+
+    if transport_mode.lower() in ['truck', 'three_wheeler']:
+        if road_quality == 5:
+            time_hours *= 1.3
+            cost *= 1.15
+            co2_kg *= 1.2
+        elif road_quality == 9:
+            time_hours *= 1.7
+            cost *= 1.35
+            co2_kg *= 1.45
 
     return PredictionResult(cost=float(cost), time=float(time_hours), co2=float(co2_kg))

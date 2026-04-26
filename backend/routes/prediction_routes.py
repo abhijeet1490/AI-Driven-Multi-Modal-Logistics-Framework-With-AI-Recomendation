@@ -45,7 +45,7 @@ def predict_route() -> Any:
         )
 
     transport_mode = payload.get("transport_mode", "truck")
-    valid_modes = ["truck", "rail", "air"]
+    valid_modes = ["truck", "rail", "three_wheeler"]
     if transport_mode not in valid_modes:
          return (
              jsonify(
@@ -61,12 +61,13 @@ def predict_route() -> Any:
         distance_km = float(payload["distance"])
         weight_kg = float(payload["weight"])
         traffic_level = float(payload["traffic"])
+        road_quality = int(payload.get("road_quality", 1))
     except (TypeError, ValueError):
         return (
             jsonify(
                 {
                     "success": False,
-                    "error": "distance, weight, and traffic must be numeric.",
+                    "error": "distance, weight, traffic, and road_quality must be numeric.",
                 }
             ),
             400,
@@ -97,15 +98,15 @@ def predict_route() -> Any:
     try:
         if not mock_mode and model is not None:
             result = make_model_prediction(
-                model, distance_km, weight_kg, traffic_level, transport_mode
+                model, distance_km, weight_kg, traffic_level, transport_mode, road_quality
             )
         else:
-            result = make_mock_prediction(distance_km, weight_kg, traffic_level, transport_mode)
+            result = make_mock_prediction(distance_km, weight_kg, traffic_level, transport_mode, road_quality)
     except Exception as exc:
         print(f"[ERROR] Prediction failed with model: {exc}. Falling back to MOCK.")
         current_app.config["MOCK_MODE"] = True
         mock_mode = True
-        result = make_mock_prediction(distance_km, weight_kg, traffic_level, transport_mode)
+        result = make_mock_prediction(distance_km, weight_kg, traffic_level, transport_mode, road_quality)
 
     response = {
         "success": True,
