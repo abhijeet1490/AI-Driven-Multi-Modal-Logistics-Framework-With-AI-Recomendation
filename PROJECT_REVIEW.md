@@ -2,19 +2,28 @@
 
 ## 1. High-Level Architecture (How It Works)
 
-The project follows a **modular 3-tier architecture**:
-1. **Frontend (Presentation Layer):** A modern, responsive web app built with HTML, Tailwind CSS, and JavaScript. It uses Google Maps API to provide Places Autocomplete and dynamic Directions routing.
-2. **Backend API (Application Layer):** Built using Python and Flask. It exposes a REST API (`/predict_route`) that the frontend calls to get predictions.
-3. **AI Engine (Data Layer):** Uses `scikit-learn` to build a RandomForest Machine Learning model predicting Cost, Time, and CO₂ emissions.
+The project features a **hybrid architecture** combining a traditional 3-tier ML system with a modern Serverless LLM integration:
+1. **Frontend (Presentation Layer):** A modern, responsive multi-page web app built with HTML, Tailwind CSS, and JavaScript. It uses Google Maps API for real-time routing and directly integrates the Google Gemini API for standalone logistics reasoning.
+2. **Backend API (Application Layer):** Built using Python and Flask. It exposes a REST API (`/predict_route`) for the core map interface.
+3. **Traditional AI Engine (Data Layer):** Uses `scikit-learn` to build a RandomForest Machine Learning model predicting Cost, Time, and CO₂ emissions.
+4. **Serverless AI Engine (LLM Layer):** Utilizes the Google Gemini API directly from the frontend to perform complex multi-modal logistics calculations and provide natural language reasoning without requiring backend infrastructure.
 
 ### 🔄 The User Journey (Data Flow)
-1. A user enters their origin and destination using Google Places Autocomplete, along with parameters like weight, distance, traffic level, road quality, and transport mode (Truck, Rail, Air).
-2. When they click **Calculate Route**:
-   - The frontend's JavaScript uses the Google Maps Directions API to fetch the real road distance, places markers on the map, and draws a blue route-line between them.
-   - The frontend packages the form data into a JSON object and concurrently fires `Promise.all` `POST` requests to the backend API (`/predict_route`) for all transport modes.
-3. The Backend receives the JSON payload, validates it, and forwards the data to the **Prediction Service**.
-4. The Prediction Service feeds the data into the trained **RandomForest ML Model** (or uses mock logic if the model is missing) to predict **Cost, Transit Time, and CO₂ emissions**. The result is mathematically adjusted based on the selected `transport_mode`.
-5. The API sends the result back to the frontend, which dynamically displays it on the user's dashboard!
+
+The application offers two distinct user experiences:
+
+**Track A: Map & ML Model Integration (`index.html`)**
+1. User enters origin/destination via Google Places Autocomplete, along with parameters like weight, distance, traffic, and road quality.
+2. On submit, the frontend uses Google Maps Directions API to fetch the real road distance and draws the route on the map.
+3. The frontend sends concurrent POST requests to the Python Backend (`/predict_route`).
+4. The Backend feeds the data into the trained **RandomForest ML Model** to predict Cost, Time, and CO₂ metrics, then sends it back to dynamically update the dashboard.
+
+**Track B: Intelligent AI Recommendation (`ai_recommend.html`)**
+1. User securely configures their personal Gemini API Key in the browser (stored in sessionStorage).
+2. User enters shipment parameters (Cargo type, Road quality, Traffic, etc.).
+3. The frontend dynamically compiles a complex, rules-based system prompt instructing Gemini how to calculate logistics mathematically based on Indian rural contexts.
+4. The prompt is sent directly from the browser to the **Google Gemini API**.
+5. The frontend receives the AI's JSON response, parses it, and populates a rich comparison dashboard highlighting the most cost-effective multi-modal combinations and environmental savings.
 
 ---
 
@@ -56,20 +65,25 @@ This is where the business and prediction logic lives, keeping your routes file 
 - **`make_mock_prediction()`**: The fallback logic. If `logistics_model.pkl` is missing, this function runs hard-coded formulas using the inputs to simulate intelligent predictions transparently, including the same mode and road quality multipliers.
 
 ### 🖥️ The Frontend UI
-#### `frontend/index.html`
-This is the single-page User Interface. It contains everything the user interacts with.
-- **Styling:** Uses Tailwind CSS via CDN for rapid, modern UI building.
-- **Map Initialization:** It embeds an interactive Google Map configured with the Places library.
-- **JavaScript Logic (inside the `<script>` tag):**
-  1. **Google Autocomplete:** Attaches to the Origin/Destination inputs to ensure valid addresses.
-  2. **Form Submission Event:** It blocks default reloading, requests the actual road route from the Google Directions API, dynamically extracts the road distance, and auto-fills the distance field.
-  3. **Concurrent API Calls:** It constructs JSON payloads for Truck, Rail, and Air, dispatching them simultaneously via `Promise.all()`.
-  4. **DOM Updating:** Upon receiving results, it updates the primary `Results Dashboard` for the selected mode, populates a detailed Multi-Modal Comparison table, highlights the best/worst values dynamically, and calculates a weighted score to display a "Recommended Mode" badge.
+#### `frontend/index.html` (Map & ML Interface)
+- **Purpose:** Core mapping and prediction dashboard.
+- **Features:** Integrates Google Maps API (Places/Directions). Fetches and displays ML model predictions concurrently via the Flask backend, rendering a multi-modal comparison table.
+
+#### `frontend/ai_recommend.html` (Serverless AI Advisor)
+- **Purpose:** Standalone intelligent recommendation engine powered entirely by Gemini AI.
+- **Features:** 
+  - **Secure API Management:** Handles local browser storage (`sessionStorage`) of the user's Gemini API key.
+  - **Dynamic Prompt Engineering:** Combines user inputs into a highly structured system prompt with exact mathematical constraints.
+  - **Rich Parsing:** Extracts and parses raw JSON directly from the LLM's text output to construct comparison tables, highlight cost/CO2 savings, and suggest multi-modal combos (e.g., Truck + Rail).
+
+#### Informational Pages (`team.html` & `paper.html`)
+- Provides essential project context, listing the development team members and showcasing the underlying research paper (with an embedded `research_paper.pdf` viewer).
 
 ---
 
 ### 💡 Extra Talking Points for Your Review
-If your reviewers ask about the strengths of this project, you can definitely mention these three points:
-1. **Separation of Concerns:** The code perfectly divides ML Logic, API Routing, Business Services, and Frontend Presentation. This makes the app highly scalable.
-2. **Fault Tolerance / Graceful Degradation:** By implementing a `mock_mode`, the application guarantees uptime and usability even if the Machine Learning model fails to load or hasn't been compiled.
-3. **External API Integrations:** Incorporating the Google Maps API for Places Autocomplete and real-time Directions routing elevates the visual experience beyond just static forms, providing highly accurate, road-based distance calculations!
+If your reviewers ask about the strengths of this project, you can definitely mention these four points:
+1. **Separation of Concerns:** The backend code perfectly divides ML Logic, API Routing, and Business Services, making the app highly scalable.
+2. **Serverless AI Integration:** The new `ai_recommend.html` page demonstrates modern frontend engineering by communicating directly with an LLM (Gemini) without relying on backend server resources, reducing server costs and latency.
+3. **Fault Tolerance / Graceful Degradation:** By implementing a `mock_mode` for the backend, the application guarantees uptime even if the Machine Learning model fails to load.
+4. **External API Integrations:** Incorporating the Google Maps API elevates the visual experience, providing highly accurate, road-based distance calculations, while Gemini AI provides deep, dynamic reasoning.
