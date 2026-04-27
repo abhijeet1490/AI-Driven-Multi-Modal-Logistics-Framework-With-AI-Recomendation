@@ -6,11 +6,11 @@ This is a modular and scalable prototype for an **AI-powered logistics optimizat
 
 The system yields three key metrics:
 
-- **💰 Total Cost** - Estimated freight cost in USD (dynamically scaled by Transport Mode)
+- **💰 Total Cost** - Estimated freight cost in ₹(rupee) (dynamically scaled by Transport Mode)
 - **⏱️ Time Estimate** - Approximate transit time in hours
 - **🌱 CO₂ Emissions** - Carbon footprint in kilograms
 
-The system uses a machine learning model (RandomForest) trained on synthetic logistics data to predict these metrics, with a graceful fallback to mock calculations if the model is unavailable. It features interactive map visualizations using the Google Maps API for Places Autocomplete and real-time Directions routing.
+The system uses a machine learning model (RandomForest) trained on synthetic logistics data to predict these metrics, with a graceful fallback to mock calculations if the model is unavailable. It features interactive map visualizations using the Google Maps API for Places Autocomplete and real-time Directions routing. Additionally, it includes a standalone, self-contained AI Recommendation engine powered directly by the Google Gemini API to provide complex logistics calculations and dynamic natural language reasoning.
 
 ---
 
@@ -36,16 +36,17 @@ The project follows a **modular 3-tier architecture**:
   - Input validation and error handling
 - **Port**: Runs on `http://127.0.0.1:5001` (configurable)
 
-### 3. **Frontend** (`frontend/index.html`)
+### 3. **Frontend** (`frontend/`)
 - **Technology**: Vanilla HTML/CSS/JavaScript
 - **Styling**: Tailwind CSS (via CDN)
 - **Mapping**: Google Maps API (Places Autocomplete, Directions Service)
-- **Purpose**: Single-page web interface for user interaction
-- **Features**:
-  - Live Google Map visualization with real road routes and distances
-  - Transport Mode selection (Truck, Rail, Air) with Road Quality (IRI) consideration
-  - Interactive Results Dashboard
-  - Concurrent Multi-Modal Comparison Table with AI-driven recommendations
+- **AI Integration**: Google Gemini API (Direct integration for intelligent logistics advice)
+- **Purpose**: Interactive web interfaces for user engagement
+- **Pages & Features**:
+  - `index.html`: Live Google Map visualization with real road routes, comparing transport modes using the backend ML model.
+  - `ai_recommend.html`: Standalone Gemini AI-powered interface providing multi-modal transport combinations and reasoning without backend dependencies.
+  - `team.html`: Information about the project team.
+  - `paper.html`: Overview of the research paper associated with the project.
 
 ---
 
@@ -128,7 +129,11 @@ ai-logistics-india/
 │   └── train_model.py              # ML model training script
 │
 ├── frontend/
-│   └── index.html                  # Web interface
+│   ├── index.html                  # Main interface with Map & ML integration
+│   ├── ai_recommend.html           # Gemini AI-powered recommendation interface
+│   ├── team.html                   # Project team details
+│   ├── paper.html                  # Research paper overview
+│   └── research_paper.pdf          # Full research paper document
 │
 ├── data/                           # Directory for datasets
 │
